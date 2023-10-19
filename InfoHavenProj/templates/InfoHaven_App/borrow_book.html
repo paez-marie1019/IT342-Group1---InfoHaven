@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoHaven - Profile</title>
+      {% load static %}
+      <style>
+          body {
+              background-image: url("{% static 'background.png' %}");
+              background-size: cover;
+              background-repeat: no-repeat;
+              background-attachment: fixed;
+          }
+  
+      </style>
+      <link rel="stylesheet" href="{% static 'styles.css' %}">
+  </head>
+  <body>
+      <header style="padding: 0;">
+          <div class="bordering2">
+              <img src="{% static 'logo.png' %}" alt="logo" class="logo">
+              <h1 class="element" style="padding-left: 10px; padding-top: 10px; font-size: 30px;">
+                  InfoHaven
+                  {% if request.session.member_type == 0 %}
+                      <span style="padding-left: 990px;">Welcome {{ request.session.member_fname }}</span>
+                  {% else %}
+                      <span style="padding-left: 990px;">Welcome Admin</span>
+                  {% endif %}
+              </h1>
+              <h2 class="element" style="padding-left: 40px; padding-bottom: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;Library</h2>
+          </div>
+          <nav class="bordering">
+              <ul class="menu">
+                  <li><a href="/Start_Logged">Home</a></li>
+                  <li><a href="#about">About</a></li>
+                  {% if request.session.member_type == 0 %}
+                      <li><a href="/Dashboard">Dashboard</a></li>
+                  {% else %}
+                      <li><a href="/DashboardAdmin">Dashboard</a></li>
+                  {% endif %}
+                  <li><a href="#faqs">FAQs</a></li>
+                  <li><a href="#browse">Browse Subjects</a></li>
+                  <li><a href="#contact">Contact Us</a></li>
+              </ul>
+              <div class="user-actions">
+                <a href="/profile">
+                    <button id="sign-in">View Profile</button>
+                </a>
+                  <a href="/Logout">
+                      <button id="sign-in">Log Out</button>
+                  </a>
+                  <div id="search-icon">
+                      <img src="{% static 'search.svg' %}" alt="Search Icon">
+                  </div>
+                  <div id="menu-icon">
+                      <img src="{% static 'menu.svg' %}" alt="Menu Icon">
+                  </div>
+              </div>
+          </nav>
+      </header>
+
+      <main style="background-color: #F2BCBA; min-height: 74vh;"> 
+        <div class="wrapper">
+          <h2>Would you like to borrow {{ book.title }} by {{ book.author }}?</h2>
+
+          <button>
+            <a href="">Yes</a>
+          </button>
+          <button>
+            {% if request.session.member_type == 0 %}
+              <a href="/Dashboard">No</a></li>
+            {% else %}
+              <a href="/DashboardAdmin">No</a></li>
+            {% endif %}
+          </button>
+        </div>
+      </main>
+
+    <footer>
+        <img src="{% static 'imglogo2.png' %}" alt="Image logo" style="width: 70px; height: 55px; float: left; margin-top: -5px; margin-left: 8px;">
+        <div>
+            <div class="library-name">
+            <h3 class="element">InfoHaven</h3><h4 class="element" style="font-size:medium;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Library</h4>
+            </div>
+            <ul class="footer-links">
+                <li><a href="#">Rights & Permissions</a></li>
+                <li><a href="#">Copyright</a></li>
+                <li><a href="#">Privacy notice</a></li>
+                <li><a href="#">Terms of Use</a></li>
+                <li><a href="#">&#169;InfoHaven</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

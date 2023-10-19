@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoHaven Library</title>
+    {% load static %}
+    <style>
+        h2 {
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 p {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header style="padding: 0;">
+        <div class="bordering2">
+            <img src="{% static 'logo.png' %}" alt="logo" class="logo">
+            <h1 class="element" style="padding-left: 10px; padding-top: 10px; font-size: 30px;">InfoHaven</h1>
+            <h2 class="element" style="padding-left: 40px; padding-bottom: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;Library</h2>
+        </div>
+        <nav class="bordering">
+            <ul class="menu">
+                <li><a href="/Start">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="Dashboard.html">Dashboard</a></li>
+                <li><a href="#faqs">FAQs</a></li>
+                <li><a href="#browse">Browse Subjects</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+            </ul>
+            <div class="user-actions">
+                <a href="/Register">
+                    <button id="sign-up">Sign Up</button>
+                </a>
+                <a href="/Login">
+                    <button id="sign-in">Sign In</button>
+                </a>
+                <div id="search-icon">
+                    <img src="{% static 'search.svg' %}" alt="Search Icon">
+                </div>
+                <div id="menu-icon">
+                    <img src="{% static 'menu.svg' %}" alt="Menu Icon">
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main style="background-color: #F2BCBC; min-height: 120vh;">
+        <br><br><br>
+        <div class="wrapper">
+            <form action="" method="post">
+                {% csrf_token %}
+                <h1>Registration</h1>
+                <br>
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+                <div class="input-box">
+                    <input type="text" name="username" placeholder="Username" required>
+                </div> 
+                <div class="input-box">
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="input-box">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <hr>
+                <div class="input-box">
+                    <input type="text" name="fname" placeholder="First Name" required>
+                </div>
+                <div class="input-box">
+                    <input type="text" name="lname" placeholder="Last Name" required>
+                </div>
+                <div class="remember-forgot">
+                    <label><input type="checkbox">I agree to the terms & conditions</label>
+                </div>
+                <br>
+                <button type="submit" class="btn">Register</button>
+                <div class="register-link">
+                    <p>Already have an account? <a href="/Login">Login</a></p>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <img src="{% static 'imglogo2.png' %}" alt="Image logo" style="width: 70px; height: 55px; float: left; margin-top: -5px; margin-left: 8px;">
+        <div>
+            <div class="library-name">
+                <h3 class="element">InfoHaven</h3><h4 class="element" style="font-size:medium;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Library</h4>
+            </div>
+            <ul class="footer-links">
+                <li><a href="#">Rights & Permissions</a></li>
+                <li><a href="#">Copyright</a></li>
+                <li><a href="#">Privacy notice</a></li>
+                <li><a href="#">Terms of Use</a></li>
+                <li><a href="#">&#169;InfoHaven</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

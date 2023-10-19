@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoHaven Library</title>
+    {% load static %}
+    <style>
+        h2{
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 p {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header style="padding: 0;">
+        <div class="bordering2">
+            <img src="{% static 'logo.png' %}" alt="logo" class="logo">
+            <h1 class="element" style="padding-left: 10px; padding-top: 10px; font-size: 30px;" >InfoHaven</h1>
+            <h2 class="element" style="padding-left: 40px; padding-bottom: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;Library</h2>
+        </div>
+        <nav class="bordering">
+            <ul class="menu">
+                <li><a href="/Start">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="Dashboard.html">Dashboard</a></li>
+                <li><a href="#faqs">FAQs</a></li>
+                <li><a href="#browse">Browse Subjects</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+            </ul>
+            <div class="user-actions">
+                <a href="/Register">
+                <button id="sign-up">Sign Up</button>
+                </a>
+                <a href="/Login">
+                <button id="sign-in">Sign In</button>
+                </a>
+                <div id="search-icon">
+                    <img src="{% static 'search.svg' %}" alt="Search Icon">
+                </div>
+                <div id="menu-icon">
+                    <img src="{% static 'menu.svg' %}" alt="Menu Icon">
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main style="background-color: #F2BCBC;"> 
+        <img src="{% static 'rightImage.png' %}" alt="Image Right" class="image-right"> 
+        <div class="main-position">
+            <img src="{% static 'infohaven.png' %}" alt="InfoHaven" class="medium-icon">
+            <h2 style="font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
+            <p><br>Welcome to <span class="highlight">InfoHaven</span>, a haven for<br>inquisitive minds, a portal to the world's<br> knowledge, and a place where learning<br> knows no bounds.</p>
+            </h2>
+            <br>
+            <p>Join us on a voyage of discovery and enlightenment today.</p>
+            <br><br>
+            <a href="/Start">
+            <button id="start-reading">Start Reading</button>
+            </a>
+            <bR><br>
+        </div>
+
+    </main>
+
+    <footer>
+        <img src="{% static 'imglogo2.png' %}" alt="Image logo" style="width: 70px; height: 55px; float: left; margin-top: -5px; margin-left: 8px;">
+        <div>
+            <div class="library-name">
+            <h3 class="element">InfoHaven</h3><h4 class="element" style="font-size:medium;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Library</h4>
+        </div>
+            <ul class="footer-links">
+                <li><a href="#">Rights & Permissions</a></li>
+                <li><a href="#">Copyright</a></li>
+                <li><a href="#">Privacy notice</a></li>
+                <li><a href="#">Terms of Use</a></li>
+                <li><a href="#">&#169;InfoHaven</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>
