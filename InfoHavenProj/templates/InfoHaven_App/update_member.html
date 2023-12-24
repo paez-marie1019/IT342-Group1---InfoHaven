@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Book - InfoHaven Library</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+
+        a {
+            color: white; 
+            text-decoration: none; 
+            font-weight: bold; 
+            padding: 5px 10px; 
+            border: 2px solid #F2BCBC; 
+            border-radius: 5px; 
+            background-color: #AA0000;
+            transition: background-color 0.3s, color 0.3s; 
+        }
+
+        a:hover {
+            background-color: darkred;  
+            color: #F2BCBC; 
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 60%;
+            margin: auto;
+        }
+
+        form h1 {
+            text-align: center;
+            color: darkred;
+            margin-bottom: 20px;
+        }
+
+        form button[type="submit"] {
+            color: white; 
+            text-decoration: none; 
+            font-weight: bold; 
+            padding: 10px 20px; 
+            border: 2px solid #F2BCBC; 
+            border-radius: 5px; 
+            background-color: #AA0000; 
+            cursor: pointer;
+            width: 50%;
+            margin-left: 150px;
+            font-size: medium;
+        }
+
+        form button[type="submit"]:hover {
+            background-color: darkred;
+            color: #F2BCBC; 
+        }
+
+        form input[type="text"],
+        form input[type="number"],
+        form input[type="email"],
+        form select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        form label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: darkred;
+        }
+        li {
+            color: darkred;
+        }
+    </style>
+</head>
+<body>
+    <header style="padding: 0;">
+        
+    </header>
+
+    <main style="background-color: #F2BCBC; min-height: 132vh;"> 
+        <br><br><br>
+        <div class="db_wrapper">
+
+            
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Update Profile</button>
+            </form>
+            {% if request.session.member_type == 0 %}
+            <a href="{% url 'Start_Logged' %}">← Back to Home</a>
+            {% else %}
+            <a href="{% url 'DashboardAdmin' %}">← Back to Dashboard</a>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer>
+    </footer>
+
+    <script>
+    function validateForm() {
+        var dateInput = document.getElementById('id_date_published').value;
+        var datePattern = /^\d{4}-\d{2}-\d{2}$/;
+
+        if (!datePattern.test(dateInput) || isNaN(Date.parse(dateInput))) {
+            alert('Enter a valid date in the format YYYY-MM-DD.');
+            return false; 
+        }
+
+        return true; 
+    }
+</script>
+</body>
+</html>

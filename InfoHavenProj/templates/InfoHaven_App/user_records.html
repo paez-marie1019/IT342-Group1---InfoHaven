@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>InfoHaven Library</title>
+      {% load static %}
+      <style>
+          body {
+              background-image: url("{% static 'background.png' %}");
+              background-size: cover;
+              background-repeat: no-repeat;
+              background-attachment: fixed;
+          }
+          #settings-icon {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Style for the settings button (icon) */
+        #settings-button {
+            cursor: pointer;
+            width: 24px; 
+            height: 24px;
+            margin-right: 10px; 
+        }
+
+        /* Style for the dropdown menu */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 100px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        /* Style for dropdown links */
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        /* Style for dropdown links on hover */
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+  
+  
+      </style>
+      <link rel="stylesheet" href="{% static 'styles.css' %}">
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+      <header style="padding: 0;">
+          <div class="bordering2">
+              <img src="{% static 'logo.png' %}" alt="logo" class="logo">
+              <h1 class="element" style="padding-left: 10px; padding-top: 10px; font-size: 30px;">
+                  InfoHaven
+                  {% if request.session.member_type == 0 %}
+                      <span style="padding-left: 990px;">Welcome {{ request.session.member_fname }}</span>
+                  {% else %}
+                      <span style="padding-left: 990px;">Welcome Admin</span>
+                  {% endif %}
+              </h1>
+              <h2 class="element" style="padding-left: 40px; padding-bottom: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;Library</h2>
+          </div>
+          <nav class="bordering">
+              <ul class="menu">
+                  {% if request.session.member_type == 0 %}
+                      <li><a href="/Dashboard">Dashboard</a></li>
+                      <li><a href="/Start_Logged">Borrowing Records</a></li>
+                  {% else %}
+                      <li><a href="/DashboardAdmin">Dashboard</a></li>
+                      <li><a href="/UserRecords">Borrowing Records</a></li>
+                  {% endif %}
+              </ul>
+              <div class="user-actions">
+                  <a href="/Logout">
+                      <button id="sign-in">Log Out</button>
+                  </a>
+                  <div id="settings-icon">
+                    <img src="{% static 'settings.svg' %}" alt="Settings Icon" id="settings-button">
+                    <div id="settings-dropdown" class="dropdown-content">
+                        <a href="/updateMember">Update Profile</a>
+                        <a href="{% url 'delete_account' %}">Delete Account</a>
+                    </div>
+                </div>
+                  <div id="search-icon">
+                      <img src="{% static 'search.svg' %}" alt="Search Icon">
+                  </div>
+                  <div id="menu-icon">
+                      <img src="{% static 'menu.svg' %}" alt="Menu Icon">
+                  </div>
+              </div>
+          </nav>
+      </header>
+
+      <main style="background-color: #F2BCBC; min-height: 120vh;"> 
+        <br><br><br>
+        <div class="db_wrapper">
+          <br>
+          <h1 style="text-align: center;">User's Borrowing Records</h1>
+          <br> <br> <hr>
+          <br>
+          <div class="row justify-content-center">
+            <div class="col-md-12">
+              <table class="table table-striped table-bordered table-hover center">
+                <thead>
+                  <tr style="font-size: larger;"> 
+                    <th>Record ID</th> 
+                    <th>Book ID</th> 
+                    <th>Book Title</th> 
+                    <th>ISBN</th>
+                    <th>Member ID</th>
+                    <th>Date Borrowed</th>
+                    <th>Return Date</th> 
+                    <th>Penalty</th>
+                    <th> </th>
+                  </tr>
+                </thead>
+                <tbody>                
+                    {% for record in records %}
+                    <tr>
+                      <td>{{ record.Record_ID }}</td>
+                      <td>{{ record.book_id.book_id }}</td>
+                      <td>{{ record.book_id.title }}</td>
+                      <td>{{ record.book_id.isbn }}</td>
+                      <td>{{ record.Member_ID }}</td>
+                      <td>{{ record.date_borrowed }}</td>
+                      <td>{{ record.return_date }}</td>
+                      <td data-penalty="{{ record.penalty }}">{{ record.penalty }}</td>
+                      <td>
+                        <br>
+                        <button class="btn" onclick="returnBookWithCheck('{{ record.Record_ID }}', '{{ record.book_id.book_id }}', '{{ record.penalty }}')">
+                            Return
+                        </button>
+                          <br><br><br>
+                          <button class="btn" onclick="payPenalty('{{record.Record_ID}}')">Paid</button>
+                          <br><br>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+            </table>
+                  
+              <div class="row justify-content-center">
+                <br><br><br>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer>
+        <img src="{% static 'imglogo2.png' %}" alt="Image logo" style="width: 70px; height: 55px; float: left; margin-top: -5px; margin-left: 8px;">
+          <div>
+              <div class="library-name">
+              <h3 class="element">InfoHaven</h3><h4 class="element" style="font-size:medium;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Library</h4>
+              </div>
+              <ul class="footer-links">
+                  <li><a href="#">Rights & Permissions</a></li>
+                  <li><a href="#">Copyright</a></li>
+                  <li><a href="#">Privacy notice</a></li>
+                  <li><a href="#">Terms of Use</a></li>
+                  <li><a href="#">&#169;InfoHaven</a></li>
+              </ul>
+          </div>
+    </footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          var settingsButton = document.getElementById("settings-button");
+          var settingsDropdown = document.getElementById("settings-dropdown");
+  
+          settingsButton.addEventListener("click", function (e) {
+              e.stopPropagation(); // Prevent click event propagation to document
+              settingsDropdown.style.display = settingsDropdown.style.display === "block" ? "none" : "block";
+          });
+  
+          document.addEventListener("click", function () {
+              settingsDropdown.style.display = "none";
+          });
+  
+          settingsDropdown.addEventListener("click", function (e) {
+              e.stopPropagation(); // Prevent click event propagation to document
+          });
+      });
+
+    function returnBook(recordId, bookId) {
+    if (confirm("Are you sure you want to return this book?")) {
+        $.ajax({
+            url: '/return-book/' + recordId + '/',
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            data: {
+                'book_id': bookId
+            },
+            success: function(response) {
+                alert('Book returned successfully.');
+                location.reload();
+            },
+            error: function(xhr, status, error) {
+                alert('Error: ' + error);
+            }
+        });
+    }
+}
+
+function payPenalty(recordId) {
+    if (confirm("Are you sure the penalty is already paid?")) {
+        $.ajax({
+            url: '/pay-penalty/' + recordId + '/',
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                alert('Penalty paid.');
+                location.reload();
+            },
+            error: function(xhr, status, error) {
+                alert('Error: ' + error);
+            }
+        });
+    }
+}
+
+function returnBookWithCheck(recordId, bookId, penalty) {
+    // Check if there is a penalty
+    if (penalty > 0) {
+        alert('Cannot return the book. There is an outstanding penalty. Please make sure the penalty is paid before returning the book.');
+    } else {
+        returnBook(recordId, bookId);
+        location.reload();
+    }
+}
+
+  </script>
+    </body>
+  
+  </html>

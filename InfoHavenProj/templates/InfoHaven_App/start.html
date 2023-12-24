@@ -27,7 +27,7 @@
             <ul class="menu">
                 <li><a href="/Start">Home</a></li>
                 <li><a href="#about">About</a></li>
-                <li><a href="/Login">Dashboard</a></li>
+                <li><a href="/DashboardGuest">Dashboard</a></li>
                 <li><a href="#faqs">FAQs</a></li>
                 <li><a href="#browse">Browse Subjects</a></li>
                 <li><a href="#contact">Contact Us</a></li>
@@ -52,11 +52,14 @@
     <main style="display: flex;  justify-content: center; align-items: center;  flex-direction: column;">
         <img src="{% static 'imglogo.png' %}" alt="image logo" style="width: 350px; height: 350px; margin-bottom: 20px">
         <div class="search-container">
-            <input type="text" id="search-bar" placeholder="Search for title, author, ISBN, publisher, etc.">
-            <button id="search-button">Search</button>
+            <form action="{% url 'search_books_guest' %}" method="get">
+                <input type="text" id="search-bar" name="search_query" placeholder="Search By Title.">
+                <button id="search-button" type="submit" >Search</button>
+            </form>
         </div>
         <button class="browse-button">Browse by Subject</button>
     </main>
+
     <footer>
         <img src="{% static 'imglogo2.png' %}" alt="Image logo" style="width: 70px; height: 55px; float: left; margin-top: -5px; margin-left: 8px;">
         <div>

@@ -12,6 +12,42 @@
               background-repeat: no-repeat;
               background-attachment: fixed;
           }
+          #settings-icon {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Style for the settings button (icon) */
+        #settings-button {
+            cursor: pointer;
+            width: 24px; 
+            height: 24px;
+            margin-right: 10px; 
+        }
+
+        /* Style for the dropdown menu */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 100px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        /* Style for dropdown links */
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        /* Style for dropdown links on hover */
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+  
   
       </style>
       <link rel="stylesheet" href="{% static 'styles.css' %}">
@@ -34,14 +70,23 @@
               <ul class="menu">
                   {% if request.session.member_type == 0 %}
                       <li><a href="/Dashboard">Dashboard</a></li>
+                      <li><a href="/Start_Logged">Borrowing Records</a></li>
                   {% else %}
                       <li><a href="/DashboardAdmin">Dashboard</a></li>
+                      <li><a href="/UserRecords">Borrowing Records</a></li>
                   {% endif %}
               </ul>
               <div class="user-actions">
                   <a href="/Logout">
                       <button id="sign-in">Log Out</button>
                   </a>
+                  <div id="settings-icon">
+                    <img src="{% static 'settings.svg' %}" alt="Settings Icon" id="settings-button">
+                    <div id="settings-dropdown" class="dropdown-content">
+                        <a href="/updateMember">Update Profile</a>
+                        <a href="{% url 'delete_account' %}">Delete Account</a>
+                    </div>
+                </div>
                   <div id="search-icon">
                       <img src="{% static 'search.svg' %}" alt="Search Icon">
                   </div>
@@ -68,6 +113,7 @@
                   <th>Book ID</th> 
                   <th>Title</th> 
                   <th>Author</th> 
+                  <th>Summary</th>
                   <th>Publisher</th>
                   <th>Classification</th> 
                   <th>Date Published</th> 
@@ -83,6 +129,7 @@
                     <td>{{ book.book_id }}</td>
                     <td>{{ book.title }}</td>
                     <td>{{ book.author }}</td>
+                    <td>{{ book.summary }}</td>
                     <td>{{ book.publisher }}</td>
                     <td>{{ book.classification }}</td>
                     <td>{{ book.date_published }}</td>
@@ -126,7 +173,25 @@
             </ul>
         </div>
   </footer>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var settingsButton = document.getElementById("settings-button");
+        var settingsDropdown = document.getElementById("settings-dropdown");
 
+        settingsButton.addEventListener("click", function (e) {
+            e.stopPropagation(); // Prevent click event propagation to document
+            settingsDropdown.style.display = settingsDropdown.style.display === "block" ? "none" : "block";
+        });
+
+        document.addEventListener("click", function () {
+            settingsDropdown.style.display = "none";
+        });
+
+        settingsDropdown.addEventListener("click", function (e) {
+            e.stopPropagation(); // Prevent click event propagation to document
+        });
+    });
+</script>
   </body>
 
 </html>
