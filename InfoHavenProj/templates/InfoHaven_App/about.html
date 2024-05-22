@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>InfoHaven Library</title>
+      {% load static %}
+      <style>
+        body {
+          background-image: url("{% static 'background.png' %}");
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+          }
+        #settings-icon {
+          position: relative;
+          display: inline-block;
+        }
+        /* Style for the settings button (icon) */
+        #settings-button {
+            cursor: pointer;
+            width: 24px; 
+            height: 24px;
+            margin-right: 10px; 
+        }
+
+        /* Style for the dropdown menu */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 100px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        /* Style for dropdown links */
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        /* Style for dropdown links on hover */
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        .circle-image-container {
+          display: inline-block;
+          text-align: center;
+          margin: 0 10px;
+        }
+      
+        .circle-image {
+          width: 150px;
+          height: 150px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 3px solid #fff;
+        }
+      
+        .circle-image-container p {
+          margin-top: 10px;
+          font-size: 16px;
+        }
+      
+        .first-batch, .sec-batch {
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 20px;
+          margin-bottom: 20px;
+        }
+      </style>
+      <link rel="stylesheet" href="{% static 'styles.css' %}">
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script>
+        function borrowBook(bookId) {
+           if (confirm("Are you sure you want to borrow this book?")) {
+              $.ajax({
+                 url: '/borrow-book/' + bookId + '/',
+                 type: 'POST',
+                 headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                 },
+                 success: function(response) {
+                    if (response.success) {
+                       alert('Book borrowed successfully.');
+                       location.reload();  // Reload the page to update the book list
+                    } else {
+                       alert('Error: ' + response.error);
+                    }
+                 },
+                 error: function(xhr, status, error) {
+                    //alert('Error: ' + error);
+                    alert('Book borrowed successfully.');
+                    location.reload();  // Reload the page to update the book list
+                 }
+              });
+           }
+        }
+        function previewBook(bookId) {
+          // Add your code to handle the book preview functionality here
+        }     
+     </script>
+    
+     
+  </head>
+  <body>
+      <header style="padding: 0;">
+          <div class="bordering2">
+              <img src="{% static 'logo.png' %}" alt="logo" class="logo">
+              <h1 class="element" style="padding-left: 10px; padding-top: 10px; font-size: 30px;">
+                  InfoHaven
+                  {% if request.session.member_type == 0 %}
+                      <span style="padding-left: 990px;">Welcome {{ request.session.member_fname }}</span>
+                  {% else %}
+                      <span style="padding-left: 990px;">Welcome Admin</span>
+                  {% endif %}
+              </h1>
+              <h2 class="element" style="padding-left: 40px; padding-bottom: 10px;">&nbsp;&nbsp;&nbsp;&nbsp;Library</h2>
+          </div>
+          <nav class="bordering">
+              <ul class="menu">
+                  <li><a href="/Start_Logged">Home</a></li>
+                  <li><a href="/About">About</a></li>
+                  {% if request.session.member_type == 0 %}
+                      <li><a href="/Dashboard">BookList</a></li>
+                  {% else %}
+                      <li><a href="/DashboardAdmin">BookList</a></li>
+                  {% endif %}
+                  <li><a href="#faqs">FAQs</a></li>
+                  
+                  <li><a href="#contact">Contact Us</a></li>
+              </ul>
+              <div class="user-actions">
+                <form action="{% url 'search_books' %}" method="get">
+                  <input type="text" name="search_query" placeholder="Search for books">
+                  <button type="submit" style="margin-right: 10px; background-color: #fff; color: darkred;
+                      border: none; padding: 8px 16px; cursor: pointer; border-radius: 5px;
+                      font-size: 15px;">Search</button>
+              </form>
+                  <a href="/profile">
+                    <button id="sign-in">View Profile</button>
+                  </a>
+                  <a href="/Logout">
+                      <button id="sign-in">Log Out</button>
+                  </a>
+                  <div id="settings-icon">
+                    <img src="{% static 'settings.svg' %}" alt="Settings Icon" id="settings-button">
+                    <div id="settings-dropdown" class="dropdown-content">
+                        <a href="/profile">View Borrowed Books</a>
+                        <a href="/updateMember">Update Profile</a>
+                        <a href="{% url 'delete_account' %}">Delete Account</a>
+                    </div>
+                </div>
+                <div id="notificaiton-icon">
+                  <a href="/Notification">
+                  <img src="{% static 'notification-bell.svg' %}" alt="Notification Icon">
+              </a>
+              </div>
+                  <div id="search-icon">
+                      <a href="/Start_Logged"><img src="{% static 'search.svg' %}" alt="Search Icon"></a>
+                  </div>
+                  <div id="menu-icon">
+                      <img src="{% static 'menu.svg' %}" alt="Menu Icon">
+                  </div>
+              </div>
+          </nav>
+      </header>
+
+      <main style="background-color: #F2BCBC; min-height: 120vh;"> 
+        <br><br><br>
+        <div class="dbu_wrapper" style="text-align: center;">
+          <h1 class="">About Us</h1>
+          <br>
+          <hr>
+          <br>
+          <h2 class="">Description</h2>
+          <br>
+          <p>
+            Welcome to InfoHaven, where you can access all of the world's knowledge.<br>
+            Our website is more than a library catalog; it's a dynamic platform meant to
+            help you navigate the huge literary and informational universe.<br>
+            InfoHaven is a haven for inquisitive minds, a portal to the world's knowledge,
+            and a place where learning knows no bounds. <br><br> Join us on a voyage of discovery
+            and enlightenment today.
+          </p>
+          <br>
+          <hr>
+          <br>
+          <h2 class="">Developers</h2>
+          <br>
+          <h3 class="">Developers</h3>
+          <div class="first-batch">
+            <div class="circle-image-container">
+              <img src="{% static 'dev1.png' %}" alt="Developer 1" class="circle-image">
+              <p>Cabuenas, Jugil P.</p>
+            </div>
+            <div class="circle-image-container">
+              <img src="{% static 'dev2.png' %}" alt="Developer 2" class="circle-image">
+              <p>Pateña, Juspher A.</p>
+            </div>
+            <div class="circle-image-container">
+              <img src="{% static 'dev3.png' %}" alt="Developer 3" class="circle-image">
+              <p>Paez, Marie Antoinette B.</p>
+            </div>
+            <div class="circle-image-container">
+              <img src="{% static 'dev4.png' %}" alt="Developer 4" class="circle-image">
+              <p>Cañeda, Britt Michaels B.</p>
+            </div>
+            <div class="circle-image-container">
+              <img src="{% static 'dev5.png' %}" alt="Developer 5" class="circle-image">
+              <p>Garciano, Isaiah John G.</p>
+            </div>
+          </div>
+          <div class="sec-batch">
+            <div class="circle-image-container">
+              <img src="{% static 'dev6.png' %}" alt="Developer 6" class="circle-image">
+              <p>Algonas, Janicka Marie P.</p>
+            </div>
+            <div class="circle-image-container">
+              <img src="{% static 'dev7.png' %}" alt="Developer 7" class="circle-image">
+              <p>Cañizares, Anfheirne T.</p>
+            </div>
+            <div class="circle-image-container">
+              <img src="{% static 'dev8.png' %}" alt="Developer 8" class="circle-image">
+              <p>Arnigo, Miel John A.</p>
+            </div>
+            <div class="circle-image-container">
+              <img src="{% static 'dev9.png' %}" alt="Developer 9" class="circle-image">
+              <p>Bacalso, John Rodolph</p>
+            </div>
+            <div class="circle-image-container">
+              <img src="{% static 'dev10.jpg' %}" alt="Developer 10" class="circle-image">
+              <p>Pancit Canton</p>
+            </div>
+          </div>
+          <br><br><br><br>
+        </div>
+        <br><br><br>
+      </main>
+
+    <footer>
+      <img src="imglogo2.png" alt="Image logo" style="width: 70px; height: 55px; float: left; margin-top: -5px; margin-left: 8px;">
+      <div>
+          <div class="library-name">
+          <h3 class="element">InfoHaven</h3><h4 class="element" style="font-size:medium;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Library</h4>
+      </div>
+          <ul class="footer-links">
+              <li><a href="#">Rights & Permissions</a></li>
+              <li><a href="#">Copyright</a></li>
+              <li><a href="#">Privacy notice</a></li>
+              <li><a href="#">Terms of Use</a></li>
+              <li><a href="#">&#169;InfoHaven</a></li>
+          </ul>
+      </div>
+  </footer>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var settingsButton = document.getElementById("settings-button");
+        var settingsDropdown = document.getElementById("settings-dropdown");
+
+        settingsButton.addEventListener("click", function (e) {
+            e.stopPropagation(); // Prevent click event propagation to document
+            settingsDropdown.style.display = settingsDropdown.style.display === "block" ? "none" : "block";
+        });
+
+        document.addEventListener("click", function () {
+            settingsDropdown.style.display = "none";
+        });
+
+        settingsDropdown.addEventListener("click", function (e) {
+            e.stopPropagation(); // Prevent click event propagation to document
+        });
+    });
+</script>
+
+  </body>
+
+</html>

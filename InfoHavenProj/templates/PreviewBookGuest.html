@@ -58,12 +58,12 @@
           <nav class="bordering">
               <ul class="menu">
                   <li><a href="/Start">Home</a></li>
-                  <li><a href="#about">About</a></li>
-                  <li><a href="/DashboardGuest">Dashboard</a></li>
+                  <li><a href="/About">About</a></li>
+                  <li><a href="/DashboardGuest">BookList</a></li>
 
 
                   <li><a href="#faqs">FAQs</a></li>
-                  <li><a href="#browse">Browse Subjects</a></li>
+                  
                   <li><a href="#contact">Contact Us</a></li>
               </ul>
               <div class="user-actions">
@@ -91,24 +91,34 @@
           </nav>
       </header>
 
-      <main style="background-color: #F2BCBC; min-height: 120vh;"> 
+    <main style="background-color: #F2BCBC; min-height: 120vh;"> 
         <br><br><br>
         <div class="dbu_wrapper">
-            <a href="{% url 'DashboardGuest' %}" class="btn">Back</a>
+            <a href="/DashboardGuest" class="btn">Back</a>
             <br><br><br>
             <h1 class="title">{{ book_title }}</h1>
-            <br><br><br>
+            <br><br>
             <ul class="book-details">
                 <li>Author: {{ book_author }}</li>
                 <li>Publication Date: {{ publication_date }}</li>
                 <li>Genre: {{ genre }}</li>
                 <li>ISBN: {{ isbn }}</li>
-                <li>Availability: {{ availability }}</li>
             </ul>
-            <br><br>
+            <br><hr><br>
             <h2>Summary</h2>
             <br>
             <p class="summary">{{ summary }}</p>
+            <br><hr><br>
+            <h2>Status</h2>
+            <br>
+            <p class="summary">
+            {% if status == 'Available' %}
+                Available
+            {% else %}
+                {{ status }} by {{ borrower }}
+            {% endif %}
+            </p>
+            <br><br><br>
         </div>
     </main>
     

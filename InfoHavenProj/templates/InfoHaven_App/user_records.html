@@ -47,8 +47,6 @@
         .dropdown-content a:hover {
             background-color: #ddd;
         }
-  
-  
       </style>
       <link rel="stylesheet" href="{% static 'styles.css' %}">
       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -70,11 +68,12 @@
           <nav class="bordering">
               <ul class="menu">
                   {% if request.session.member_type == 0 %}
-                      <li><a href="/Dashboard">Dashboard</a></li>
+                      <li><a href="/Dashboard">BookList</a></li>
                       <li><a href="/Start_Logged">Borrowing Records</a></li>
                   {% else %}
-                      <li><a href="/DashboardAdmin">Dashboard</a></li>
+                      <li><a href="/DashboardAdmin">Book List</a></li>
                       <li><a href="/UserRecords">Borrowing Records</a></li>
+                      <li><a href="/BorrowRequest">Requests</a></li>
                   {% endif %}
               </ul>
               <div class="user-actions">
@@ -102,7 +101,7 @@
         <br><br><br>
         <div class="db_wrapper">
           <br>
-          <h1 style="text-align: center;">User's Borrowing Records</h1>
+          <h1 style="text-align: center;">Borrowing Records</h1>
           <br> <br> <hr>
           <br>
           <div class="row justify-content-center">
@@ -124,25 +123,34 @@
                 <tbody>                
                     {% for record in records %}
                     <tr>
-                      <td>{{ record.Record_ID }}</td>
-                      <td>{{ record.book_id.book_id }}</td>
-                      <td>{{ record.book_id.title }}</td>
-                      <td>{{ record.book_id.isbn }}</td>
-                      <td>{{ record.Member_ID }}</td>
-                      <td>{{ record.date_borrowed }}</td>
-                      <td>{{ record.return_date }}</td>
-                      <td data-penalty="{{ record.penalty }}">{{ record.penalty }}</td>
-                      <td>
+                    <td>{{ record.Record_ID }}</td>
+                    <td>{{ record.book_id.book_id }}</td>
+                    <td>{{ record.book_id.title }}</td>
+                    <td>{{ record.book_id.isbn }}</td>
+                    <td>{{ record.Member_ID }}</td>
+                    <td>{{ record.date_borrowed }}</td>
+                    <td>{{ record.return_date }}</td>
+                    <td data-penalty="{{ record.penalty }}">{{ record.penalty }}</td>
+                    <td>
                         <br>
                         <button class="btn" onclick="returnBookWithCheck('{{ record.Record_ID }}', '{{ record.book_id.book_id }}', '{{ record.penalty }}')">
                             Return
                         </button>
-                          <br><br><br>
-                          <button class="btn" onclick="payPenalty('{{record.Record_ID}}')">Paid</button>
-                          <br><br>
-                      </td>
+                        <br><br><br>
+                        {% if record.penalty == 0.00 %}
+                            <button class="btn" style="pointer-events: none; background-color: lightgray;" disabled>Paid</button>
+                        {% else %}
+                            <button class="btn" onclick="payPenalty('{{record.Record_ID}}')">Pay Penalty</button>
+                        {% endif %}
+
+                        <br><br>
+                    </td>
                     </tr>
-                  {% endfor %}
+                    {% empty %}
+                        <tr>
+                            <td colspan="9">No Borrowed Books</td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
                   
@@ -223,7 +231,8 @@ function payPenalty(recordId) {
                 location.reload();
             },
             error: function(xhr, status, error) {
-                alert('Error: ' + error);
+                {% comment %} alert('Error: ' + error); {% endcomment %}
+                location.reload()
             }
         });
     }

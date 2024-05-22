@@ -25,7 +25,7 @@ class Book(models.Model):
     publisher = models.CharField(max_length=255)
     classification = models.CharField(max_length=255)
     date_published = models.DateField()
-    isbn = models.CharField(max_length=13)  
+    isbn = models.CharField(max_length=13, unique=True)
     status = models.CharField(max_length=50)  
     borrower = models.CharField(max_length=50, blank=True, null=True)
     
@@ -38,21 +38,29 @@ class BorrowingRecord(models.Model):
     Member_ID = models.CharField(max_length=50)
     date_borrowed = models.DateField(default=None)
     return_date = models.DateField(default=None)
-    date_returned = models.DateField(null=True)
-    isReturned = models.IntegerField(default=0)
+    date_returned = models.DateField(null=True, blank=True)
     penalty = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
+    # if book is returned via by admin
+    isReturned = models.IntegerField(default=0) 
+    # if borrowing record is accepted via by admin
+    isAccepted = models.IntegerField(default=0) 
+    # if book is being borrow via by user
+    isRequested = models.IntegerField(default=0)
+    
 
     def __str__(self):
         return self.Record_ID
 
     def calculate_money_penalty(self):
-        # Calculate the initial money penalty based on the number of days overdue
-        if not self.isReturned:
+        if not self.isReturned and self.return_date:
             days_overdue = (date.today() - self.return_date).days
             if days_overdue > 0:
-                # Increment penalty by 20 pesos for each day overdue
                 self.penalty = days_overdue * 20.00
             else:
                 self.penalty = 0.00
         else:
             self.penalty = 0.00
+
+class BorrowRequest(models.Model):
+    # Your existing fields
+    borrowing_record = models.OneToOneField(BorrowingRecord, null=True, blank=True, on_delete=models.SET_NULL)

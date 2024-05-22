@@ -1,7 +1,7 @@
 from . import views
 from django.contrib import admin
 from django.urls import path, include
-
+from .views import forgot_password
 
 urlpatterns = [
     path('',views.home, name="home"),
@@ -13,6 +13,11 @@ urlpatterns = [
 
     path('Login', views.login, name="Login"),
     # When a user visits '/Login', Django will call the 'login' view.
+
+    path('Notification', views.notification, name="Notification"),
+    # When a user visits '/notification', Django will call the 'notification' view.
+
+    path('ForgotPassword', views.forgot_password, name='forgot_password'),
 
     path('Start', views.start, name="Start"),
     # When a user visits '/start', Django will call the 'start' view.
@@ -39,8 +44,8 @@ urlpatterns = [
      # When user clicks add new book
 
     path('profile/', views.profile, name='profile'),
-     # When user clicks view profile
-     
+    # When user clicks view profile
+    
     path('borrow-book/<str:book_id>/', views.borrow_book, name='borrow-book'),
     # When user clicks borrow in the dashboard
 
@@ -66,8 +71,7 @@ urlpatterns = [
      path('PreviewBook.html/<str:book_id>/', views.preview_book, name='preview_book'),
 
     # when an admin clicks on the borrowing records navigation on the admin dashboard
-    path('UserRecords',views.user_records, name='UserRecords'),
-
+    path('UserRecords', views.user_records, name='user_records'),
     # when an admin clicks on return
     path('return-book/<str:record_id>/', views.return_book, name='return-book'),
 
@@ -79,5 +83,13 @@ urlpatterns = [
 
     #When member clicks the extend button
     path('extend/<str:record_id>/', views.extend_return_date, name='extend_return_date'),
+
+    path('BorrowRequest', views.borrow_request, name='borrow_request'),
+    
+    # When a user visits '/About', Django will call the 'about' view.
+    path('About', views.about, name="About"),
+    
+    # When a user visits '/AboutGuest', Django will call the 'aboutGuest' view.
+    path('About_Guest', views.about_guest, name="About_Guest"),
 
 ]

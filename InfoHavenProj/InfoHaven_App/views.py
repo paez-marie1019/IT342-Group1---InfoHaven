@@ -1,21 +1,35 @@
-from datetime import date, timedelta
-from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from .models import BorrowingRecord, Member, Book
-from django.utils import timezone
 from .forms import BookForm
 from .forms import BookUpdateForm
 from .forms import BookSearchForm
-from django.contrib.auth.decorators import login_required
 from .forms import UpdateMemberForm
-from django.http import HttpResponseRedirect
-from datetime import datetime
+from datetime import date, timedelta, datetime
+from django.db.models import Q
 
 # Create your views here.
+
+def about(request):
+    return render(request,"InfoHaven_App/about.html")
+
+def about_guest(request):
+    return render(request,"InfoHaven_App/about_guest.html")
+
 def home(request):
     return render(request,"InfoHaven_App/introduction.html")
 
+def forgot_password(request):
+    return render(request, 'forgot_password.html')
+
+def start(request):
+    return render(request,"InfoHaven_App/start.html")
+
+def start_logged(request):
+    return render(request,"InfoHaven_App/start_logged.html")
+
+
+# funtions
 def register(request):    
     # Checks if the HTTP request method is POST.
     if request.method == "POST":
@@ -87,14 +101,7 @@ def logout(request):
         del request.session['member_id']
     if 'member_fname' in request.session:
         del request.session['member_fname']
-
     return render(request,"InfoHaven_App/start.html")
-
-def start(request):
-    return render(request,"InfoHaven_App/start.html")
-
-def start_logged(request):
-    return render(request,"InfoHaven_App/start_logged.html")
 
 def dashboard(request):
     # Query the database to get a list of books
@@ -172,97 +179,72 @@ def add_book(request):
 def profile(request):
     if 'member_id' in request.session:
         member_id = request.session['member_id']
-        member_borrowed_books = BorrowingRecord.objects.filter(Member_ID=member_id, isReturned=0)
-
+        member_requested_books = BorrowingRecord.objects.filter(Member_ID=member_id, isReturned=0, isRequested=1)
+        member_borrowed_books = BorrowingRecord.objects.filter(Member_ID=member_id, isReturned=0, isRequested=0, isAccepted=1)
+        member_old_borrowed_books = BorrowingRecord.objects.filter(Member_ID=member_id, isReturned=1)
+        
         # Calculate money penalty for each record
         for record in member_borrowed_books:
             record.calculate_money_penalty()
 
         context = {
+            'requested_books': member_requested_books,
             'borrowed_books': member_borrowed_books,
+            'old_borrowed_books': member_old_borrowed_books
         }
+        
+        # Handle cancel request action
+        if request.method == 'POST':
+            action = request.POST.get('action')
+            if action == 'cancel':
+                record_id = request.POST.get('record_id')
+                record = get_object_or_404(BorrowingRecord, Record_ID=record_id)
+                book = record.book_id
+                record.isAccepted = 0
+                record.isRequested = 0
+                book.borrower = None
+                book.status = "Available"
+                book.save()
+                record.delete()
+                return redirect('profile')  # Redirect back to the profile after canceling request
 
         return render(request, 'InfoHaven_App/profile.html', context)
-
+    
     return render(request, 'InfoHaven_App/profile.html')
 
 def search_books(request):
-    if request.method == 'GET':
-        form = BookSearchForm(request.GET)
-        if form.is_valid():
-            search_query = form.cleaned_data['search_query']
-            # Perform the search in your database, e.g., using a filter query
-            books = Book.objects.filter(title__icontains=search_query)
-        else:
-            books = []
-    else:
-        form = BookSearchForm()
-        books = []
+    books = None
+    form = BookSearchForm(request.GET or None)
+    if form.is_valid():
+        query = form.cleaned_data['search_query']
+        books = Book.objects.filter(
+            Q(title__icontains=query) | 
+            Q(author__icontains=query) | 
+            Q(isbn__icontains=query) |
+            Q(publisher__icontains=query) |
+            Q(date_published__icontains=query) |
+            Q(status__icontains=query)|
+            Q(classification__icontains=query)
+        )
 
     return render(request, 'search_results.html', {'form': form, 'books': books})
 
 def search_books_guest(request):
-    if request.method == 'GET':
-        form = BookSearchForm(request.GET)
-        if form.is_valid():
-            search_query = form.cleaned_data['search_query']
-            # Perform the search in your database, e.g., using a filter query
-            books = Book.objects.filter(title__icontains=search_query)
-        else:
-            books = []
-    else:
-        form = BookSearchForm()
-        books = []
+    books = None
+    form = BookSearchForm(request.GET or None)
+    if form.is_valid():
+        query = form.cleaned_data['search_query']
+        books = Book.objects.filter(
+            Q(title__icontains=query) | 
+            Q(author__icontains=query) | 
+            Q(isbn__icontains=query) |
+            Q(publisher__icontains=query) |
+            Q(date_published__icontains=query) |
+            Q(status__icontains=query)|
+            Q(classification__icontains=query)
+        )
 
     return render(request, 'search_results_guest.html', {'form': form, 'books': books})
-
-def borrow_book(request, book_id):
-    # Check if the user is logged in by checking if 'member_id' is in the session
-    if 'member_id' not in request.session:
-        return redirect('login')  # Redirect to the login page or any other appropriate action.
-
-    member_id = request.session['member_id']
-    
-    try:
-        member = Member.objects.get(Member_ID=member_id)
-    except Member.DoesNotExist:
-        return redirect('login')  # Redirect to the login page if the member doesn't exist.
-
-    try:
-        book = Book.objects.get(book_id=book_id, borrower=None)  # Get the book by its ID that is not already borrowed
-    except Book.DoesNotExist:
-        return redirect('InfoHaven_App/Dashboard.html')  # Redirect to the dashboard or any other appropriate action if the book is not available.
-
-    book.borrower = member_id  # Associate the book with the member
-    book.status = "Borrowed"  # Update the book's status
-    book.save()  # Save the changes
-
-    #For Naming convention of Record ID
-    date_today = date.today()
-    current_datetime = datetime.now()
-
-    # Use the default string representation of the datetime object
-    default_formatted_datetime = str(current_datetime)
-
-    record_id = default_formatted_datetime + str(member_id) + str(book_id)
-    dateToReturn = date_today + timedelta(days=7)
-    
-    borrowing_record = BorrowingRecord(
-        Record_ID=record_id,
-        book_id=book,
-        Member_ID=member_id,
-        date_borrowed=date_today,
-        return_date=dateToReturn,
-        isReturned=0,
-        penalty=0
-    )
-    
-    # Calculate initial money_penalty based on the number of days overdue
-    borrowing_record.calculate_money_penalty()
-
-    borrowing_record.save()
-
-    return redirect('InfoHaven_App/profile.html')  # Redirect to the member's profile page
 
 def update_member(request):
     if 'member_id' not in request.session:
@@ -328,6 +310,8 @@ def preview_book_guest(request, book_id):
         'isbn': book.isbn,
         'summary': book.summary,
         'availability': book.status,
+        'status': book.status,
+        'borrower': book.borrower,
     }
     return render(request, 'PreviewBookGuest.html', context)
 
@@ -344,22 +328,10 @@ def preview_book(request, book_id):
         'isbn': book.isbn,
         'summary': book.summary,
         'availability': book.status,
+        'status': book.status,
+        'borrower': book.borrower,
     }
     return render(request, 'PreviewBook.html', context)
-
-def user_records(request):
-
-    # Get all Borrowing records that are not returned
-    records = BorrowingRecord.objects.filter(isReturned=0)
-
-    for record in records:
-            record.calculate_money_penalty()
-
-    context = {
-        'records' : records
-    }
-
-    return render(request, 'InfoHaven_App/user_records.html', context)
 
 def return_book(request, record_id):
     if request.method == 'POST':
@@ -391,12 +363,10 @@ def pay_penalty(request, record_id):
 
     return redirect('UserRecords') 
 
-
-
 def penalties(request):
     if 'member_id' in request.session:
         member_id = request.session['member_id']
-        member_borrowed_books = BorrowingRecord.objects.filter(Member_ID=member_id, isReturned=0)
+        member_borrowed_books = BorrowingRecord.objects.filter(Member_ID=member_id, isReturned=0, isAccepted=1)
 
         # Calculate money penalty for each record
         for record in member_borrowed_books:
@@ -410,7 +380,6 @@ def penalties(request):
 
     return render(request, 'InfoHaven_App/penalties.html')
 
-
 def extend_return_date(request, record_id):
     # Get the BorrowingRecord object
     record = get_object_or_404(BorrowingRecord, Record_ID=record_id)
@@ -421,3 +390,180 @@ def extend_return_date(request, record_id):
        
 
     return redirect('penalties')  # Redirect back to the penalties page
+
+
+######################################################
+
+def borrow_request(request):
+    if 'member_id' not in request.session:
+        return redirect('login')  # Redirect to the login page or any other appropriate action
+
+    member_id = request.session['member_id']
+
+    try:
+        member = Member.objects.get(Member_ID=member_id)
+    except Member.DoesNotExist:
+        return redirect('login')  # Redirect to the login page if the member doesn't exist
+
+    # Get all Borrowing records that are not returned, not accepted, and are requested
+    records = BorrowingRecord.objects.filter(isReturned=0, isAccepted=0, isRequested=1)
+
+    for record in records:
+        record.calculate_money_penalty()
+        record.save()  # Save the penalty updates
+
+    context = {
+        'records': records
+    }
+
+    if request.method == 'POST':
+        # Process the form submission
+        record_id = request.POST.get('record_id')
+        action = request.POST.get('action')
+
+        if action == 'accept':
+            # Handle accept action
+            record = get_object_or_404(BorrowingRecord, Record_ID=record_id)
+            book = record.book_id
+            record.isAccepted = 1
+            record.isRequested = 0
+            # book.borrower = member.Member_ID  # Associate the book with the member's ID
+            book.status = "Borrowed"  # Update the book's status
+            book.save()  # Save the changes
+            record.save()
+            return redirect('user_records')  # Update to match your URL name
+        elif action == 'decline':
+            # Handle decline action
+            record = get_object_or_404(BorrowingRecord, Record_ID=record_id)
+            book = record.book_id  # Fetch the book associated with the record
+            record.isAccepted = 0
+            record.isRequested = 0
+            book.borrower = None
+            book.status = "Available"  # Update the book's status
+            book.save()  # Save the changes
+            record.delete()  # Delete the declined record
+            return redirect('borrow_request')  # Update to match your URL name
+        
+    return render(request, 'borrow_request.html', context)
+
+###################################################################################################
+
+# def cancel_request(request):
+#     if 'member_id' not in request.session:
+#         return redirect('login')
+
+#     member_id = request.session['member_id']
+
+#     try:
+#         member = Member.objects.get(Member_ID=member_id)
+#     except Member.DoesNotExist:
+#         return redirect('login')
+
+#     records = BorrowingRecord.objects.filter(isReturned=0, isAccepted=0, isRequested=1)
+
+#     for record in records:
+#         record.calculate_money_penalty()
+#         record.save()
+
+#     context = {
+#         'records': records
+#     }
+
+#     if request.method == 'POST':
+#         record_id = request.POST.get('record_id')
+#         action = request.POST.get('action')
+        
+#         if action == 'cancel':
+#             record = get_object_or_404(BorrowingRecord, Record_ID=record_id)
+#             book = record.book_id
+#             record.isAccepted = 0
+#             record.isRequested = 0
+#             book.borrower = None
+#             book.status = "Available"
+#             book.save()
+#             record.delete()
+#             return redirect('profile')
+
+#     return render(request, 'InfoHaven_App/profile.html', context)
+
+
+
+###################################################################################################
+
+def borrow_book(request, book_id):
+    if 'member_id' not in request.session:
+        return redirect('login')  # Redirect to the login page or any other appropriate action.
+
+    member_id = request.session['member_id']
+    
+    try:
+        member = Member.objects.get(Member_ID=member_id)
+    except Member.DoesNotExist:
+        return redirect('login')  # Redirect to the login page if the member doesn't exist.
+
+    try:
+        book = Book.objects.get(book_id=book_id, borrower=None)  # Get the book by its ID that is not already borrowed
+    except Book.DoesNotExist:
+        return redirect('dashboard')  # Redirect to the dashboard or any other appropriate action if the book is not available.
+
+    # For Naming convention of Record ID
+    date_today = date.today()
+    current_datetime = datetime.now()
+    default_formatted_datetime = current_datetime.strftime("%Y%m%d%H%M%S")
+    record_id = f"{default_formatted_datetime}_{member_id}_{book_id}"
+    dateToReturn = date_today + timedelta(days=7)
+    
+    borrowing_record = BorrowingRecord(
+        Record_ID=record_id,
+        book_id=book,
+        Member_ID=member_id,
+        date_borrowed=date_today,
+        return_date=dateToReturn,
+        isReturned=0,
+        penalty=0.00,
+        isAccepted=0,
+        isRequested=1,
+    )
+    
+    # Calculate initial money_penalty based on the number of days overdue
+    borrowing_record.calculate_money_penalty()
+    borrowing_record.save()
+    
+    # Update the book status to "Requested"
+    book.status = "Requested"
+    book.borrower = member.Member_ID  # Associate the book with the member's ID
+    book.save()
+
+    return redirect('profile')  # Redirect to the member's profile page
+
+###################################################################################################
+
+def user_records(request):
+    # Fetch borrowing records where isAccepted is true and status is "Borrowed"
+    records = BorrowingRecord.objects.filter(isAccepted=1, isRequested=0, isReturned=0, book_id__status="Borrowed").select_related('book_id')
+
+    # Fetch the borrower's name for each record
+    for record in records:
+        member = get_object_or_404(Member, Member_ID=record.Member_ID)
+        record.borrower_name = f"{member.Fname} {member.Lname}"  # Assuming you have first_name and last_name fields in the Member model
+
+    context = {
+        'records': records
+    }
+    return render(request, 'InfoHaven_App/user_records.html', context)
+
+###################################################################################################
+
+
+def notification(request):
+    if 'member_id' in request.session:
+        member_id = request.session['member_id']
+        penalties = BorrowingRecord.objects.filter(Member_ID=member_id, isReturned=0, penalty__gt=0)
+        
+        context = {
+            'penalties': penalties,
+        }
+        
+        return render(request, "InfoHaven_App/notification.html", context)
+    
+    return redirect('Login')

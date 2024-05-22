@@ -93,14 +93,14 @@
           <nav class="bordering">
               <ul class="menu">
                   <li><a href="/Start_Logged">Home</a></li>
-                  <li><a href="#about">About</a></li>
+                  <li><a href="/About">About</a></li>
                   {% if request.session.member_type == 0 %}
-                      <li><a href="/Dashboard">Dashboard</a></li>
+                      <li><a href="/Dashboard">BookList</a></li>
                   {% else %}
-                      <li><a href="/DashboardAdmin">Dashboard</a></li>
+                      <li><a href="/DashboardAdmin">BookList</a></li>
                   {% endif %}
                   <li><a href="#faqs">FAQs</a></li>
-                  <li><a href="#browse">Browse Subjects</a></li>
+              
                   <li><a href="#contact">Contact Us</a></li>
               </ul>
               <div class="user-actions">
@@ -118,6 +118,11 @@
                         <a href="{% url 'delete_account' %}">Delete Account</a>
                     </div>
                 </div>
+                <div id="notificaiton-icon">
+                    <a href="/Notification">
+                    <img src="{% static 'notification-bell.svg' %}" alt="Notification Icon">
+                </a>
+                </div>
                   <div id="search-icon">
                       <img src="{% static 'search.svg' %}" alt="Search Icon">
                   </div>
@@ -128,10 +133,9 @@
           </nav>
       </header>
 
-      <main style="background-color: #F2BCBA; min-height: 74vh;"> 
+        <main style="background-color: #F2BCBA; min-height: 74vh;"> 
         <br><br><br>
         <div class="dbu_wrapper" style="display: flex; flex-direction: column;">
-          
             <ul class="link-list">
                 <li class="list-item">
                     <a href="/profile" class="list-link">Your Summary</a>
@@ -143,44 +147,134 @@
                     <a href="#" class="list-link">Your Personal Details</a>
                 </li>
             </ul>
-            <h1 style="align-self: center;">Borrowed Books</h1>
-          <br>
-        <h3>Borrowed Books</h3>
-        <table class="table table-striped table-bordered table-hover center">
-            <thead>
-               <tr style="font-size: larger;">
-                  <th>Book ID</th>
-                  <th>Title</th>
-                  <th>Author</th>
-                  <th>Publisher</th>
-                  <th>Classification</th>
-                  <th>Date Published</th>
-                  <th>ISBN</th>
-               </tr>
-            </thead>
-            <tbody>
-                {% for record in borrowed_books %}
-               <tr>
-                  <td>{{ record.book_id.book_id }}</td>
-                  <td>{{ record.book_id.title }}</td>
-                  <td>{{ record.book_id.author }}</td>
-                  <td>{{ record.book_id.publisher }}</td>
-                  <td>{{ record.book_id.classification }}</td>
-                  <td>{{ record.book_id.date_published }}</td>
-                  <td>{{ record.book_id.isbn }}</td>
-               </tr>
-               {% empty %}
-               <tr>
-                  <td colspan="7">No borrowed books.</td>
-               </tr>
-               {% endfor %}
-            </tbody>
-         </table>
-    </div>
+            <hr><br>
+            <h1 style="align-self: center;">My Currently Borrowed Books</h1>
+            <br>
+            <table class="table table-striped table-bordered table-hover center">
+                <thead>
+                    <tr style="font-size: larger;">
+                        <th>Record ID</th>
+                        <th>Book ID</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Date Published</th>
+                        <th>ISBN</th>
+                        <th><th>
+                        <th>Date Borrowed</th>
+                        <th>Penalty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in borrowed_books %}
+                        <tr>
+                            <td>{{ record.Record_ID }}</td>
+                            <td>{{ record.book_id.book_id }}</td>
+                            <td>{{ record.book_id.title }}</td>
+                            <td>{{ record.book_id.author }}</td>
+                            <td>{{ record.book_id.date_published }}</td>
+                            <td>{{ record.book_id.isbn }}</td>
+                            <td>{{ record.book_id.status }}</td>
+                            <td style="background-color: white;"></td>
+                            <td>{{ record.date_borrowed }}</td>
+                            <td>₱{{ record.penalty }}</td>
 
-      
-      
-      
+                        </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="11">No borrowed books.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <br><br><hr><br><br><br>
+            <h1 style="align-self: center;">Pending List</h1>
+            <br>
+            <table class="table table-striped table-bordered table-hover center">
+                <thead>
+                    <tr style="font-size: larger;">
+                        <th>Record ID</th>
+                        <th>Book ID</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Date Published</th>
+                        <th>ISBN</th>
+                        <th></th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <form id="action-form" method="post" style="display: none;">
+                    {% csrf_token %}
+                    <input type="hidden" name="record_id" value="">
+                    <input type="hidden" name="action" value="">
+                </form>
+                <tbody>
+                    {% for record in requested_books %}
+                        <tr>
+                            <td>{{ record.Record_ID }}</td>
+                            <td>{{ record.book_id.book_id }}</td>
+                            <td>{{ record.book_id.title }}</td>
+                            <td>{{ record.book_id.author }}</td>
+                            <td>{{ record.book_id.date_published }}</td>
+                            <td>{{ record.book_id.isbn }}</td>
+                            <td style="background-color: white;"></td>
+                            <td>{{ record.book_id.status }}</td>
+                            <td>
+                                <br>
+                                <button class="btn" onclick="handleAction('{{ record.Record_ID }}', 'cancel')">Cancel</button>
+                                <br><br>
+                            </td>
+                        </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10">No books requested.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <br><br><hr><br><br><br>
+            <h1 style="align-self: center;">Previously Borrowed Books</h1>
+            <br>
+            <table class="table table-striped table-bordered table-hover center">
+                <thead>
+                    <tr style="font-size: larger;">
+                        <th>Record ID</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Date Published</th>
+                        <th>ISBN</th>
+                        <th></th>
+                        <th>Date Borrowed</th>
+                        <th>Date Returned</th>
+                    </tr>
+                </thead>
+                <form id="action-form" method="post" style="display: none;">
+                    {% csrf_token %}
+                    <input type="hidden" name="record_id" value="">
+                    <input type="hidden" name="action" value="">
+                </form>
+                <tbody>
+                    {% for record in old_borrowed_books %}
+                        <tr>
+                            <td>{{ record.Record_ID }}</td>
+                            <td>{{ record.book_id.title }}</td>
+                            <td>{{ record.book_id.author }}</td>
+                            <td>{{ record.book_id.date_published }}</td>
+                            <td>{{ record.book_id.isbn }}</td>
+                            <td style="background-color: white;"></td>
+                            <td>{{ record.date_borrowed }}</td>
+                            <td>{{ record.date_returned }}</td>
+                        </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">No books requested.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <br><br><br><br><br>
+        </div>
+        <br><br><br>
       </main>
 
     <footer>
@@ -216,6 +310,18 @@
                 e.stopPropagation(); // Prevent click event propagation to document
             });
         });
+        function handleAction(recordId, action) {
+            console.log('Record ID:', recordId);
+            console.log('Action:', action);
+            
+            if (confirm(`Are you sure you want to ${action} this borrowing request?`)) {
+                var form = document.getElementById('action-form');
+                form.record_id.value = recordId;
+                form.action.value = action;
+                form.submit();
+            }
+        }
+        
     </script>
 </body>
 </html>

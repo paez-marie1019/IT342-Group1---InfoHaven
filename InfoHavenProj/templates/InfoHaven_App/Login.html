@@ -17,10 +17,10 @@
         <nav class="bordering">
             <ul class="menu">
                 <li><a href="/Start">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="/DashboardGuest">Dashboard</a></li>
+                <li><a href="/About_Guest">About</a></li>
+                <li><a href="/DashboardGuest">BookList</a></li>
                 <li><a href="#faqs">FAQs</a></li>
-                <li><a href="#browse">Browse Subjects</a></li>
+      
                 <li><a href="#contact">Contact Us</a></li>
             </ul>
             <div class="user-actions">
@@ -39,9 +39,10 @@
             </div>
         </nav>
     </header>
+
     <main style="background-color: #F2BCBC; min-height: 74vh;"> 
       <br><br><br>
-      <div class="wrapper">
+      <div class="wrapper" style="margin-bottom:auto;">
         <body>
           <div class="form" style="display: flex; justify-content: center; align-items: center;">
             <form action="" method="post">
@@ -64,7 +65,7 @@
               </div>
               <div class="remember-forgot">
                 <label><input type="checkbox">Remember me</label>
-                <a href="#">Forgot password?</a>
+                <a href="/ForgotPassword">Forgot password?</a>
               </div>
               <br>
               <button type="submit" class="btn">Login</button>
@@ -75,6 +76,7 @@
           </div>
         </body>
       </div>
+      <br><br><br>
     </main>
     <footer>
         <img src="{% static 'imglogo2.png' %}" alt="Image logo" style="width: 70px; height: 55px; float: left; margin-top: -5px; margin-left: 8px;">

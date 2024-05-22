@@ -13,7 +13,7 @@ class BookForm(forms.ModelForm):
         fields = '__all__'  
         
 class BookSearchForm(forms.Form):
-    search_query = forms.CharField(max_length=100, label='Search for books')
+    search_query = forms.CharField(max_length=100, required=False, label='Search for books')
 
 class UpdateMemberForm(forms.ModelForm):
     class Meta:

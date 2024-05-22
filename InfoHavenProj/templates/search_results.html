@@ -29,7 +29,8 @@
                                 alert('Book borrowed successfully.');
                                 location.reload();  // Reload the page to update the book list
                             } else {
-                                alert('Error: ' + response.error);
+                                {% comment %} alert('Error: ' + response.error); {% endcomment %}
+                                location.reload();  // Reload the page to update the book list
                             }
                         },
                         error: function(xhr, status, error) {
@@ -59,14 +60,14 @@
             <nav class="bordering">
                 <ul class="menu">
                     <li><a href="/Start_Logged">Home</a></li>
-                    <li><a href="#about">About</a></li>
+                    <li><a href="/About">About</a></li>
                     {% if request.session.member_type == 0 %}
-                        <li><a href="/Dashboard">Dashboard</a></li>
+                        <li><a href="/Dashboard">BookList</a></li>
                     {% else %}
-                        <li><a href="/DashboardAdmin">Dashboard</a></li>
+                        <li><a href="/DashboardAdmin">BookList</a></li>
                     {% endif %}
                     <li><a href="#faqs">FAQs</a></li>
-                    <li><a href="#browse">Browse Subjects</a></li>
+                  
                     <li><a href="#contact">Contact Us</a></li>
                 </ul>
                 <div class="user-actions">
@@ -137,13 +138,16 @@
                                         <td>{{ book.status }}</td>
                                         <td>
                                             <br>
-                                            <a href="{% url 'preview_book' book.book_id %}" class="btn">Preview</a>
-                                            {% if book.status == "Available" %}
-                                            <a href="#" class="btn" onclick="borrowBook('{{ book.book_id }}')">Borrow</a>
-                                            {% else %}
-                                            <a class="btn" style="pointer-events: none; background-color: lightgray;">Borrowed</a>
-                                            {% endif %}
-                                            <br><br><br>
+                                            <a href="{% url 'preview_book' book_id=book.book_id %}" class="btn">Preview</a>
+                                            <br> <br> <br>
+                                                {% if book.status == "Available" %}
+                                                <a href="#" class="btn" onclick="borrowBook('{{ book.book_id }}')">Reserve</a>
+                                                {% elif book.status == "Borrowed" %}
+                                                <a class="btn" style="pointer-events: none; background-color: lightgray;" disabled>Borrowed</a>
+                                                {% elif book.status == "Requested" %}
+                                                <a class="btn" style="pointer-events: none; background-color: lightgray;" disabled>Reserved</a>
+                                                {% endif %}
+                                                <br><br><br>
                                         </td>
                                         </tr>
                                         {% endfor %}

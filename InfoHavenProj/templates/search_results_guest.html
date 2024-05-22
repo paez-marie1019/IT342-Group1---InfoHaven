@@ -26,25 +26,22 @@
             <nav class="bordering">
                 <ul class="menu">
                     <li><a href="/Start">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="/DashboardGuest">Dashboard</a></li>
-  
-  
+                    <li><a href="/About_Guest">About</a></li>
+                    <li><a href="/DashboardGuest">BookList</a></li>
                     <li><a href="#faqs">FAQs</a></li>
-                    <li><a href="#browse">Browse Subjects</a></li>
                     <li><a href="#contact">Contact Us</a></li>
                 </ul>
                 <div class="user-actions">
-                  <form action="{% url 'search_books_guest' %}" method="get">
+                    <form action="{% url 'search_books_guest' %}" method="get">
                     <input type="text" name="search_query" placeholder="Search for books">
                     <button type="submit" style="margin-right: 10px; background-color: #fff; color: darkred;
                         border: none; padding: 8px 16px; cursor: pointer; border-radius: 5px;
                         font-size: 15px;">Search</button>
                 </form>
                 <div class="user-actions">
-                  <a href="/Register">
-                      <button id="sign-up">Sign Up</button>
-                  </a>
+                <a href="/Register">
+                    <button id="sign-up">Sign Up</button>
+                </a>
                   <a href="/Login">
                       <button id="sign-in">Sign In</button>
                   </a>
@@ -110,9 +107,7 @@
                             <h4 style="text-align: center;">No books found.</h4>
                         {% endif %}
                     </h3>
-                    
                 </div>
-    
             </div>
         </main>
     

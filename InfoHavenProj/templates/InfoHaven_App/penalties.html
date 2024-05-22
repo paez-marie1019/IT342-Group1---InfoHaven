@@ -94,14 +94,14 @@
         <nav class="bordering">
             <ul class="menu">
                 <li><a href="/Start_Logged">Home</a></li>
-                <li><a href="#about">About</a></li>
+                <li><a href="/About">About</a></li>
                 {% if request.session.member_type == 0 %}
-                    <li><a href="/Dashboard">Dashboard</a></li>
+                    <li><a href="/Dashboard">BookList</a></li>
                 {% else %}
-                    <li><a href="/DashboardAdmin">Dashboard</a></li>
+                    <li><a href="/DashboardAdmin">BookList</a></li>
                 {% endif %}
                 <li><a href="#faqs">FAQs</a></li>
-                <li><a href="#browse">Browse Subjects</a></li>
+                
                 <li><a href="#contact">Contact Us</a></li>
             </ul>
             <div class="user-actions">
@@ -132,7 +132,7 @@
 
    
     <main style="background-color: #F2BCBA; min-height: 74vh;"> 
-      <br>
+        <br><br><br>
         <div class="dbu_wrapper" style="display: flex; flex-direction: column;">
            
             <ul class="link-list">
@@ -146,9 +146,10 @@
                     <a href="#" class="list-link">Your Personal Details</a>
                 </li>
             </ul>
+            <hr><br>
             <h1 style="align-self: center;">Penalties</h1>
           <br>
-         
+        
           <table class="table table-striped table-bordered table-hover center">
               <thead>
                   <tr>

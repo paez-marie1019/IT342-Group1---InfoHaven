@@ -69,11 +69,12 @@
           <nav class="bordering">
               <ul class="menu">
                   {% if request.session.member_type == 0 %}
-                      <li><a href="/Dashboard">Dashboard</a></li>
+                      <li><a href="/Dashboard">BookList</a></li>
                       <li><a href="/Start_Logged">Borrowing Records</a></li>
                   {% else %}
-                      <li><a href="/DashboardAdmin">Dashboard</a></li>
-                      <li><a href="/UserRecords">Borrowing Records</a></li>
+                    <li><a href="/DashboardAdmin">Book List</a></li>
+                    <li><a href="/UserRecords">Borrowing Records</a></li>
+                    <li><a href="/BorrowRequest">Requests</a></li>
                   {% endif %}
               </ul>
               <div class="user-actions">
@@ -100,7 +101,7 @@
     <main style="background-color: #F2BCBC; min-height: 120vh;"> 
       <br><br><br>
       <div class="db_wrapper">
-        <h1 class="" style="text-align: center;">Dashboard</h1>
+        <h1 class="" style="text-align: center;">BookList</h1>
         <br>
         <h2 class="" style="text-align: center;">InfoHaven's List of Books</h2>
         <br> <br> <hr>
@@ -156,6 +157,7 @@
           </div>
         </div>
       </div>
+      <br><br><br>
     </main>
 
     <footer>

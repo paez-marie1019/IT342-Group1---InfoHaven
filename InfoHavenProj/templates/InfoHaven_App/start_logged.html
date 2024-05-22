@@ -71,14 +71,13 @@
         <nav class="bordering">
             <ul class="menu">
                 <li><a href="/Start_Logged">Home</a></li>
-                <li><a href="#about">About</a></li>
+                <li><a href="/About">About</a></li>
                 {% if request.session.member_type == 0 %}
-                    <li><a href="/Dashboard">Dashboard</a></li>
+                    <li><a href="/Dashboard">BookList</a></li>
                 {% else %}
-                    <li><a href="/DashboardAdmin">Dashboard</a></li>
+                    <li><a href="/DashboardAdmin">BookList</a></li>
                 {% endif %}
                 <li><a href="#faqs">FAQs</a></li>
-                <li><a href="#browse">Browse Subjects</a></li>
                 <li><a href="#contact">Contact Us</a></li>
             </ul>
             <div class="user-actions">
@@ -95,6 +94,11 @@
                         <a href="/updateMember">Update Profile</a>
                         <a href="{% url 'delete_account' %}">Delete Account</a>
                     </div>
+                </div>
+                <div id="notificaiton-icon">
+                    <a href="/Notification">
+                    <img src="{% static 'notification-bell.svg' %}" alt="Notification Icon">
+                </a>
                 </div>
                 <div id="search-icon">
                     <img src="{% static 'search.svg' %}" alt="Search Icon">
@@ -115,7 +119,10 @@
                 <button id="search-button" type="submit">Search</button>
             </form>
         </div>
-        <button class="browse-button">Browse by Subject</button>
+        <a href="/Dashboard">
+            <button class="browse-button">Browse by Subject</button>
+        </a>
+        
     </main>
 
     <footer>
